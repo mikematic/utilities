@@ -1,17 +1,19 @@
 #!/usr/bin/ksh
 
-folderToSearch=/app/WebSphere/was7x/Was70Install/java/jre
-listOfJars=$(find $folderToSearch -name "*.jar")
-for jarFile in $listOfJars
-do
-	classFiles=$(jar -tvf $jarFile |grep Debug |awk '{print $8}')
-	for classFile in $classFiles
-	do
-		#if [[ -z "$classFile" ]]; then
-		#echo "classFile is null"
-		#else
-	 	#echo "$classFile"
-		#fi
-		echo "$classFile in $jarFile"
-	done	
-done
+if [ $# -eq 2 ]; then
+  classOrPackageToSearch=$1
+  jarFolder=$2
+  listOfJars=$(find $jarFolder -name "*.jar")
+  for jarFile in $listOfJars
+    do
+      echo "Checking $jarFile ..."
+      classFiles=$(jar -tvf $jarFile |grep $classOrPackageToSearch |awk '{print $8}')
+      for classFile in $classFiles
+        do
+          echo "\n\nFound $classOrPackageToSearch in package $classFile in jarfile $jarFile \n\n"
+        done
+    done
+else
+  echo "\nERROR: Incorrect arguments"
+  echo "\nUSAGE: findjar.ksh [class or package name to search] [folder to search]\n"
+fi
